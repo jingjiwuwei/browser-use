@@ -27,7 +27,6 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -217,11 +216,11 @@ class ScheduledScreenshotMonitor:
 				print(f'   - {block.name}: {block.selector}')
 		else:
 			print('⚠️ No chart blocks identified. Will try to screenshot common chart elements.')
-			# Fallback: use common chart selectors
+			# Fallback: use separate blocks for different common selectors
 			blocks_found = [
 				ScreenshotBlock(name='Chart-Canvas', selector='canvas'),
 				ScreenshotBlock(name='Chart-SVG', selector='svg'),
-				ScreenshotBlock(name='Dashboard-Main', selector='.dashboard, .chart-container, .graph-container'),
+				ScreenshotBlock(name='Dashboard-Main', selector='.dashboard'),
 			]
 
 		return blocks_found
@@ -249,9 +248,7 @@ class ScheduledScreenshotMonitor:
 				filepath = self.screenshot_dir / filename
 
 				# Take screenshot using browser session
-				screenshot_bytes = await self.browser_session.screenshot_element(
-					selector=block.selector, path=str(filepath), format='png'
-				)
+				await self.browser_session.screenshot_element(selector=block.selector, path=str(filepath), format='png')
 
 				# Create metadata entry
 				metadata = ScreenshotMetadata(
